@@ -1,5 +1,7 @@
 const mysql = require('mysql2');
 const validation = require("../validation/requestValidation");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const db = mysql.createConnection({
     host: "localhost",
@@ -36,7 +38,15 @@ function createOrder(body, email, callback) {
     })
 }
 function getUserByEmail(email, callback) {
-    db.query("SELECT name, email, creationDate FROM user WHERE email = " + mysql.escape(email), ((err, result) => {
+    db.query("SELECT name, email creationDate FROM user WHERE email = " + mysql.escape(email), ((err, result) => {
+            if (!result[0] || err) callback({error: "hsm-api: user not found"});
+            else callback(result[0]);
+        }
+    ))
+}
+
+function getUserByEmailWithPassword(email, callback) {
+    db.query("SELECT name, email, password, creationDate FROM user WHERE email = " + mysql.escape(email), ((err, result) => {
             if (!result[0] || err) callback({error: "hsm-api: user not found"});
             else callback(result[0]);
         }
@@ -71,6 +81,52 @@ function getSellOrdersByUser(user, callback) {
             if (!result[0] || err) callback({error: "hsm-api: user has no sell orders"})
             else callback(result);
         });
+}
+
+function loginUser(body, callback) {
+    const {error} = validation.loginValidation(body);
+    if (error) return callback({error: error.details[0].message});
+         getUserByEmailWithPassword(body.email, call => {
+            if (call.error) callback({error: "hsm-api: email or password are wrong"});
+            else {
+                bcrypt.compare(body.password, call.password, (err, res) => {
+                    if (!res) return callback({error: "email or password are wrong"});
+                    if (res) {
+                        const token = jwt.sign({email: call.email}, process.env.TOKEN);
+                        callback({token});
+                    }
+                    else return callback({error: "hsm-api: something went wrong"});
+                });
+            }
+        })
+}
+
+async function createUser(body, callback) {
+    const {error} = validation.registerValidation(body);
+    if (error) return callback({error: error.details[0].message});
+    else {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(body.password, salt);
+        db.query("INSERT INTO user(name, email, password) VALUES (?, ?, ?)",
+            [body.name, body.email, hashedPassword], (err) => {
+                if (err) callback({error: "hsm-api: user already exists"});
+                else callback({success: "hsm-api: user " + body.name + " created"});
+            })
+    }
+}
+
+function getOrdersByUser(user, callback) {
+    let a = JSON.parse("{}");
+    getBuyOrdersByUser(user, call => {
+        a['buy'] = call;
+        getSellOrdersByUser(user, cal => {
+            a['sell'] = cal;
+            getUserByName(user, ca => {
+                a['user'] = ca;
+                callback(a);
+            });
+        })
+    });
 }
 
 function getOrdersByItem(item, callback) {
@@ -141,3 +197,6 @@ module.exports.getOrdersByItem = getOrdersByItem;
 module.exports.createOrder = createOrder;
 module.exports.getItemByName = getItemByName;
 module.exports.getAllItem = getAllItem;
+module.exports.getOrdersByUser = getOrdersByUser;
+module.exports.createUser = createUser;
+module.exports.loginUser = loginUser;
