@@ -96,6 +96,13 @@ function getItemByName(name, callback) {
         else callback(result[0]);
     });
 }
+
+function getAllItem(callback) {
+    db.query("SELECT * FROM item", (err, result) => {
+        if (err) callback({error: "hsm-api: error while fetching items"})
+        else callback(result);
+    })
+}
 function deleteOrder(id, callback) {
     db.query("DELETE from ORDERS WHERE id = " + mysql.escape(id), (err) => {
         if (err) callback({error: "hsm-api: order not found"});
@@ -132,3 +139,5 @@ module.exports.getSellOrdersByUser = getSellOrdersByUser;
 module.exports.deleteOrderByEmailAndId = deleteOrderByEmailAndId;
 module.exports.getOrdersByItem = getOrdersByItem;
 module.exports.createOrder = createOrder;
+module.exports.getItemByName = getItemByName;
+module.exports.getAllItem = getAllItem;
