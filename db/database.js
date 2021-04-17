@@ -116,17 +116,21 @@ async function createUser(body, callback) {
 }
 
 function getOrdersByUser(user, callback) {
-    let a = JSON.parse("{}");
-    getBuyOrdersByUser(user, call => {
-        a['buy'] = call;
-        getSellOrdersByUser(user, cal => {
-            a['sell'] = cal;
-            getUserByName(user, ca => {
-                a['user'] = ca;
-                callback(a);
-            });
-        })
-    });
+    const {error} = validation.nameUrlValidation({name: user});
+    if (error) callback({error: error.details[0].message});
+    else {
+        let a = JSON.parse("{}");
+        getBuyOrdersByUser(user, call => {
+            a['buy'] = call;
+            getSellOrdersByUser(user, cal => {
+                a['sell'] = cal;
+                getUserByName(user, ca => {
+                    a['user'] = ca;
+                    callback(a);
+                });
+            })
+        });
+    }
 }
 
 function getOrdersByItem(item, callback) {
