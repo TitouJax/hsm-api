@@ -24,7 +24,7 @@ app.use('/api/user', authRoute);
 app.use('/api/orders', ordersRoute);
 app.use('/api/item', itemRoute);
 
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
    console.log('Server is running')
 });
 
