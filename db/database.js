@@ -2,12 +2,13 @@ const mysql = require('mysql2');
 const validation = require("../validation/requestValidation");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-/*
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    database: "hsm-api"
+    host: process.env.DBHOST,
+    user: process.env.DBUSER,
+    password: process.env.DBPSWD,
+    database: process.env.DBNAME
 });
 
 db.connect((err) => {
@@ -205,5 +206,5 @@ module.exports.getAllItem = getAllItem;
 module.exports.getOrdersByUser = getOrdersByUser;
 module.exports.createUser = createUser;
 module.exports.loginUser = loginUser;
-*/
+
 
