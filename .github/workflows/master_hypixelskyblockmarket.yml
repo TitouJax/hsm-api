@@ -38,7 +38,7 @@ jobs:
     needs: build
     environment:
       name: 'production'
-      url: hypixelskyblockmarket.scm.azurewebsites.net:443
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
     - name: Download artifact from build job
@@ -52,5 +52,5 @@ jobs:
       with:
         app-name: 'hypixelskyblockmarket'
         slot-name: 'production'
-        publish-profile: hypixelskyblockmarket - Web Deploy
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_4ecb4f9b71aa4eb2bf89fc368d94bae4 }}
         package: .
