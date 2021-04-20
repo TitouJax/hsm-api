@@ -3,6 +3,7 @@ const validation = require("../validation/requestValidation");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+/*
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -204,3 +205,5 @@ module.exports.getAllItem = getAllItem;
 module.exports.getOrdersByUser = getOrdersByUser;
 module.exports.createUser = createUser;
 module.exports.loginUser = loginUser;
+*/
+
