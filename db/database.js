@@ -4,40 +4,32 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
     host: process.env.DBHOST,
     user: process.env.DBUSER,
     password: process.env.DBPSWD,
     database: process.env.DBNAME
 });
 
-db.connect((err) => {
-    if (err)
-    {
-        throw  err;
-    }
-    console.log("Connected to database")
-});
-
 function createOrder(body, email, callback) {
-    const {error} = validation.createOrderValidation(body)
-    if (error) return callback({error: error.details[0].message});
-    getItemByName(body.item, cal => {
-        if (cal.error) callback(cal);
-        else {
-            getUserByEmail(email, call => {
-                if (call.error) callback(call);
-                else {
-                    userName = call.name;
-                    db.query("INSERT INTO orders(user, item, price, quantity, buyOrSell) VALUES (?, ?, ?, ?, ?)",
-                        [userName, body.item, body.price, body.quantity, body.buyOrSell], (err) => {
-                            if (err) callback({error: "hsm-api: can't create order"});
-                            else callback({success: "hsm-api: order created"});
-                        })
-                }
-            })
-        }
-    })
+        const {error} = validation.createOrderValidation(body)
+        if (error) return callback({error: error.details[0].message});
+        getItemByName(body.item, cal => {
+            if (cal.error) callback(cal);
+            else {
+                getUserByEmail(email, call => {
+                    if (call.error) callback(call);
+                    else {
+                        userName = call.name;
+                        db.query("INSERT INTO orders(user, item, price, quantity, buyOrSell) VALUES (?, ?, ?, ?, ?)",
+                            [userName, body.item, body.price, body.quantity, body.buyOrSell], (err) => {
+                                if (err) callback({error: "hsm-api: can't create order"});
+                                else callback({success: "hsm-api: order created"});
+                            })
+                    }
+                })
+            }
+        })
 }
 function getUserByEmail(email, callback) {
     db.query("SELECT name, email creationDate FROM user WHERE email = " + mysql.escape(email), ((err, result) => {
@@ -160,10 +152,10 @@ function getItemByName(name, callback) {
 }
 
 function getAllItem(callback) {
-    db.query("SELECT * FROM item", (err, result) => {
-        if (err) callback({error: "hsm-api: error while fetching items"})
-        else callback(result);
-    })
+        db.query("SELECT * FROM item", (err, result) => {
+            if (err) callback({error: "hsm-api: error while fetching items"})
+            else callback(result);
+        })
 }
 function deleteOrder(id, callback) {
     db.query("DELETE from ORDERS WHERE id = " + mysql.escape(id), (err) => {
