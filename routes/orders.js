@@ -27,15 +27,9 @@ router.delete('/delete', tokenValidation.auth, (req, res) => {
 })
 
 router.get('/:item', (req, res) => {
-    db.db.getConnection(function(err, connection) {
-        if (err) {
-            callback({error: err});
-            return;
-        }
         db.getOrdersByItem(req.params.item, callback => {
             res.send(callback);
         });
-    })
 })
 
 module.exports = router;
