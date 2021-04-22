@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const db = mysql.createPool({
+    connectionLimit: 10,
     host: process.env.DBHOST,
     user: process.env.DBUSER,
     password: process.env.DBPSWD,
