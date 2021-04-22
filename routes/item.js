@@ -4,8 +4,7 @@ const db = require('../db/database');
 router.get('/:item', (req, res) => {
     db.db.getConnection(function(err, connection) {
         if (err) {
-            callback({error: err});
-            return;
+            return res.send({error: err});
         }
         db.getItemByName(req.params.item, callback => {
             if (callback.error) return res.send(callback);
@@ -17,8 +16,7 @@ router.get('/:item', (req, res) => {
 router.get('/', (req, res) => {
     db.db.getConnection(function(err, connection) {
         if (err) {
-            callback({error: err});
-            return;
+            return res.send({error: err});
         }
         db.getAllItem(callback => {
             if (callback.error) return res.send(callback);
