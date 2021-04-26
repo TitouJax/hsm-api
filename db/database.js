@@ -23,7 +23,8 @@ function createOrder(body, email, callback) {
                     else {
                         userName = call.name;
                         db.query("INSERT INTO orders(user, item, price, quantity, buyOrSell) VALUES (?, ?, ?, ?, ?)",
-                            [userName, body.item, body.price, body.quantity, body.buyOrSell], (err) => {
+                            [userName, body.item, body.price, body.quantity, body.buyOrSell], (err, result) => {
+                                console.log(err);
                                 if (err) callback({error: "hsm-api: can't create order"});
                                 else callback({success: "hsm-api: order created"});
                             })
@@ -34,7 +35,7 @@ function createOrder(body, email, callback) {
 }
 function getUserByEmail(email, callback) {
     db.query("SELECT name, email creationDate FROM user WHERE email = " + mysql.escape(email), ((err, result) => {
-            if (!result[0] || err) callback({error: "hsm-api: user not found"});
+            if (err || !result[0]) callback({error: "hsm-api: user not found"});
             else callback(result[0]);
         }
     ))
@@ -42,7 +43,7 @@ function getUserByEmail(email, callback) {
 
 function getUserByEmailWithPassword(email, callback) {
     db.query("SELECT name, email, password, creationDate FROM user WHERE email = " + mysql.escape(email), ((err, result) => {
-            if (!result[0] || err) callback({error: "hsm-api: user not found"});
+            if (err || !result[0]) callback({error: "hsm-api: user not found"});
             else callback(result[0]);
         }
     ))
@@ -50,7 +51,7 @@ function getUserByEmailWithPassword(email, callback) {
 
 function getUserByName(name, callback) {
     db.query("SELECT name, email, creationDate FROM user WHERE name = " + mysql.escape(name), ((err, result) => {
-            if (!result[0] || err) callback({error: "hsm-api: user not found"});
+            if (err || !result[0]) callback({error: "hsm-api: user not found"});
             else callback(result[0]);
         }
     ))
@@ -58,7 +59,7 @@ function getUserByName(name, callback) {
 
 function getBuyOrdersByUser(user, callback) {
     db.query("SELECT * FROM orders WHERE buyOrSell = 'buy' AND user = " + mysql.escape(user), (err, result) => {
-            if (!result[0] || err) callback({error: "hsm-api: user has no buy orders"})
+            if (err || !result[0]) callback({error: "hsm-api: user has no buy orders"})
             else callback(result);
         }
     )
@@ -66,14 +67,14 @@ function getBuyOrdersByUser(user, callback) {
 
 function getOrderById(id, callback) {
     db.query("SELECT * FROM orders WHERE id = " + mysql.escape(id), (err, result) => {
-        if (!result[0] || err) callback({error: "hsm-api: order not found"})
+        if (err || !result[0]) callback({error: "hsm-api: order not found"})
         else callback(result[0]);
     });
 }
 
 function getSellOrdersByUser(user, callback) {
     db.query("SELECT * FROM orders WHERE buyOrSell = 'sell' AND user = " + mysql.escape(user), (err, result) => {
-            if (!result[0] || err) callback({error: "hsm-api: user has no sell orders"})
+            if (err || !result[0]) callback({error: "hsm-api: user has no sell orders"})
             else callback(result);
         });
 }
@@ -131,11 +132,11 @@ function getOrdersByUser(user, callback) {
 function getOrdersByItem(item, callback) {
     const callbackResp = JSON.parse("{}");
     db.query("SELECT * FROM orders WHERE buyOrSell = 'buy' AND item = " + mysql.escape(item), (err, result) => {
-        if (!result[0] || err) callback({error: "hsm-api: orders not found"})
+        if (err || !result[0]) callback({error: "hsm-api: orders not found"})
         else {
             callbackResp['buy'] = result;
             db.query("SELECT * FROM orders WHERE buyOrSell = 'sell' AND item = " + mysql.escape(item), (err, result) => {
-                if (!result[0] || err) callback({error: "hsm-api: orders not found"})
+                if (err || !result[0]) callback({error: "hsm-api: orders not found"})
                 else {
                     callbackResp['sell'] = result;
                     callback(callbackResp);
@@ -147,7 +148,7 @@ function getOrdersByItem(item, callback) {
 
 function getItemByName(name, callback) {
     db.query("SELECT * FROM item WHERE name = " + mysql.escape(name), (err, result) => {
-        if (!result[0] || err) callback({error: "hsm-api: item not found"});
+        if (err || !result[0]) callback({error: "hsm-api: item not found"});
         else callback(result[0]);
     });
 }
