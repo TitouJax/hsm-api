@@ -156,7 +156,7 @@ function getOrdersByItem(item, callback) {
 
 function getItemByName(name, callback) {
     db.query("SELECT * FROM item WHERE name = " + mysql.escape(name), (err, result) => {
-        if (err || !result[0]) callback({error: "hsm-api: item not found"});
+        if (err || !result[0]) callback({error: err});
         else callback(result[0]);
     });
 }
