@@ -113,7 +113,7 @@ async function createUser(body, callback) {
         const hashedPassword = await bcrypt.hash(body.password, salt);
         db.query("INSERT INTO user(name, email, password) VALUES (?, ?, ?)",
             [body.name, body.email, hashedPassword], (err) => {
-                if (err) callback({error: err});
+                if (err) callback({error: "hsm-api: user already exists"});
                 else callback({success: "hsm-api: user " + body.name + " created"});
             })
     }
