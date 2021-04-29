@@ -50,7 +50,7 @@ function getUserByEmailWithPassword(email, callback) {
 }
 
 function getUserByName(name, callback) {
-    db.query("SELECT name, email, creationDate FROM user WHERE name = " + mysql.escape(name), ((err, result) => {
+    db.query("SELECT name, creationDate FROM user WHERE name = " + mysql.escape(name), ((err, result) => {
             if (err || !result[0]) callback({error: "hsm-api: user not found"});
             else callback(result[0]);
         }
@@ -58,7 +58,7 @@ function getUserByName(name, callback) {
 }
 
 function getUserByEmail(email, callback) {
-    db.query("SELECT name, email, creationDate FROM user WHERE email = " + mysql.escape(email), ((err, result) => {
+    db.query("SELECT name, creationDate FROM user WHERE email = " + mysql.escape(email), ((err, result) => {
             if (err || !result[0]) callback({error: "hsm-api: user not found"});
             else callback(result[0]);
         }
