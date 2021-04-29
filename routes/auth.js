@@ -5,16 +5,14 @@ const tokenValidation = require('../validation/tokenValidation');
 router.post('/register', (req, res) =>
 {
     db.createUser(req.body, callback => {
-        if (callback.error) return res.send(callback);
-        else return res.send(callback);
+        return res.send(callback);
     })
 });
 
 router.post('/login', (req, res) =>
 {
     db.loginUser(req.body, callback => {
-        if (callback.error) return res.send(callback);
-        else return res.send(callback);
+        return res.send(callback);
     })
 });
 
@@ -26,6 +24,8 @@ router.get('/profile/:name', (req, res) => {
 });
 
 router.get('/profile', tokenValidation.auth, (req, res) => {
-     res.send(req.user);
+     db.getUserByEmail(req.user.email, callback => {
+         return res.send(callback);
+     })
 });
 module.exports = router;

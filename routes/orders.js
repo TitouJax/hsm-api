@@ -9,8 +9,8 @@ router.post('/create', tokenValidation.auth, (req, res) => {
 })
 
 router.delete('/delete', tokenValidation.auth, (req, res) => {
-        db.deleteOrderByEmailAndId(req.user.email, req.body.id, call => {
-            res.send(call);
+        db.deleteOrderByEmailAndId(req.user.email, req.body.id, callback => {
+            res.send(callback);
         });
 })
 

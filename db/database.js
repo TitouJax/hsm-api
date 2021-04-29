@@ -57,6 +57,14 @@ function getUserByName(name, callback) {
     ))
 }
 
+function getUserByEmail(email, callback) {
+    db.query("SELECT name, email, creationDate FROM user WHERE email = " + mysql.escape(email), ((err, result) => {
+            if (err || !result[0]) callback({error: "hsm-api: user not found"});
+            else callback(result[0]);
+        }
+    ))
+}
+
 function getBuyOrdersByUser(user, callback) {
     db.query("SELECT * FROM orders WHERE buyOrSell = 'buy' AND user = " + mysql.escape(user), (err, result) => {
             if (err || !result[0]) callback({error: "hsm-api: user has no buy orders"})
@@ -200,5 +208,6 @@ module.exports.getAllItem = getAllItem;
 module.exports.getOrdersByUser = getOrdersByUser;
 module.exports.createUser = createUser;
 module.exports.loginUser = loginUser;
+module.exports.getUserByEmail = getUserByEmail;
 
 
