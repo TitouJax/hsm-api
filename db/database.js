@@ -140,11 +140,11 @@ function getOrdersByUser(user, callback) {
 function getOrdersByItem(item, callback) {
     const callbackResp = JSON.parse("{}");
     db.query("SELECT * FROM orders WHERE buyOrSell = 'buy' AND item = " + mysql.escape(item), (err, result) => {
-        if (err || !result[0]) callback({error: "hsm-api: orders not found"})
+        if (err) callback({error: "hsm-api: orders not found"})
         else {
             callbackResp['buy'] = result;
             db.query("SELECT * FROM orders WHERE buyOrSell = 'sell' AND item = " + mysql.escape(item), (err, result) => {
-                if (err || !result[0]) callback({error: "hsm-api: orders not found"})
+                if (err) callback({error: "hsm-api: orders not found"})
                 else {
                     callbackResp['sell'] = result;
                     callback(callbackResp);
@@ -156,7 +156,7 @@ function getOrdersByItem(item, callback) {
 
 function getItemByName(name, callback) {
     db.query("SELECT * FROM item WHERE name = " + mysql.escape(name), (err, result) => {
-        if (err || !result[0]) callback({error: err});
+        if (err || !result[0]) callback({error: "hsm-api: item not found"});
         else callback(result[0]);
     });
 }
